@@ -1,6 +1,5 @@
-const { log } = require("console");
+const { log, error } = require("console");
 const Librus = require("librus-api");
-
 
 const readline = require('readline');
 const rl = readline.createInterface({
@@ -16,21 +15,19 @@ function askQuestion(query) {
 }
 
 async function main() {
+    let login = await askQuestion("Enter your librus login: ");
+    let password = await askQuestion("Enter your librus password: ");
 
-    let login = await askQuestion("Enter your librus loggin: ");
-    let password = await askQuestion("Enter your librus passowrd: ");
+    console.log(`Logging user with login: ${login}`);
 
-    console.log(`Logging user with login: ${login} and password: ${password}`);
-
-    client.authorize(login, password).then(() => {
-        console.log("Logged successfully");
-
+    try {
+        await client.authorize(login, password); 
+        console.log("Logged in successfully");
+        
         console.log("Available options: \n1. List Announcements \n2. List Homework \n3. List Absences \n4. Get Timetable");
+        const option = await askQuestion("Choose option: ");
 
-        return askQuestion("Choose option: ");
-    })
-    .then(async (option) => {
-        switch(option) {
+        switch (option) {
             case '1':
                 try {
                     const announcements = await client.inbox.listAnnouncements();
@@ -40,7 +37,7 @@ async function main() {
                 }
                 break;
             case '2':
-                
+                // Placeholder for Homework option
                 break;
             case '3':
                 try {
@@ -61,10 +58,19 @@ async function main() {
             default:
                 console.log("Invalid option selected.");
         }
-    })
-    .finally(() => {
+
+    } catch (error) {
+        if (error.response) {
+            console.error(`Error logging in: ${error.response.status} - ${error.response.data}`);
+        } else if (error.request) {
+            console.error("No response received from Librus:", error.request);
+        } else {
+            console.error("Error during login:", error.message);
+        }
+    } finally {
         rl.close();
-    });
+    }
 }
+
 
 main();
