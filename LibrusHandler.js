@@ -18,8 +18,8 @@ class LibrusHandler {
 	}
 
 	async loginUser() {
-		let login = '9065521u'; //await this.askQuestion("Enter your librus login: ");
-		let password = 'Kuba2007'; //await this.askQuestion("Enter your librus password: ");
+		let login = await this.askQuestion("Enter your librus login: ");
+		let password = await this.askQuestion("Enter your librus password: ");
 
 		console.log(`Logging user with login: ${login}`);
 
